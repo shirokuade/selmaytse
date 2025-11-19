@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["yt-dlp", "ffmpeg"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npx prisma generate && npx prisma db push && npm start"
