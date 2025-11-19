@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  videoId     String   @unique // YouTube video ID
+  title       String
+  channelName String
+  channelId   String?
+  description String?
+  thumbnail   String?
+  duration    Int?     // Duration in seconds
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transcripts TranscriptSegment[]
+
+  @@index([videoId])
+  @@index([channelName])
+}
+
+model TranscriptSegment {
+  id        String   @id @default(cuid())
+  videoId   String
+  text      String
+  start     Float    // Start time in seconds
+  duration  Float    // Duration in seconds
+  order     Int      // Order of the segment
+  createdAt DateTime @default(now())
+
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@index([videoId])
+  @@index([text])
+}
